@@ -14,7 +14,7 @@
 	<title></title>
 	
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/sunspec-monitor.js" rel="stylesheet">
+    <link href="css/sunspec-monitor.css" rel="stylesheet">
 	<link href="css/font-awesome.css" rel="stylesheet">
 	
 	<script src="js/jquery-2.1.4.js"></script>
@@ -29,6 +29,40 @@
 </head>
 
 <body>
+
+	<script type="text/javascript">
+	$( document ).ready( function() {
+		getSunspecData();
+	});
+	
+	function getSunspecData() {
+ 		var jqxhr = $.getJSON( "/modbus/?host=192.168.178.38&port=502&unitID=247" );
+		jqxhr.done(function( data ) {
+			$.each( data, function( key, val ) {
+				$( '#' + key).html(val);
+			});
+			diff();
+			setTimeout( function() { getSunspecData() }, 5000);
+		});
+	}
+
+	function snap() {
+		$( '#M_AC_Power_snap').text($( '#M_AC_Power').text());
+		$( '#M_AC_Power1_snap').text($( '#M_AC_Power1').text());
+		$( '#M_AC_Power2_snap').text($( '#M_AC_Power2').text());
+		$( '#M_AC_Power3_snap').text($( '#M_AC_Power3').text());
+		diff();
+	}
+	
+	function diff() {
+		$( '#M_AC_Power_diff').text($( '#M_AC_Power_snap').text() - $( '#M_AC_Power').text());
+		$( '#M_AC_Power1_diff').text($( '#M_AC_Power1_snap').text() - $( '#M_AC_Power1').text());
+		$( '#M_AC_Power2_diff').text($( '#M_AC_Power2_snap').text() - $( '#M_AC_Power2').text());
+		$( '#M_AC_Power3_diff').text($( '#M_AC_Power3_snap').text() - $( '#M_AC_Power3').text());
+	}
+
+	</script>
+
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -38,7 +72,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#"><span class="navbar-brand-orange">BP</span>KeyData</a>
+				<a class="navbar-brand" href="#"><span class="navbar-brand-orange">SUNSPEC</span>Monitor</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 
@@ -46,9 +80,38 @@
 		</div>
 	</nav>
 	
-	<div class="main">
-		<div class="content-table"></div>
-	</div>			
+	<div class="main">		
+			<div class="col-sm-12">
+				<div class="text-right"><a href="#" class="btn btn-info" onclick="snap(); return false;" role="button">SNAP</a></div>
+			</div>
+			
+			<div class="col-sm-12 spacer"></div>
+			
+			<div class="col-sm-6">
+				<div class="col-sm-12 powerbox">
+					<div class="col-sm-6">Snap: <span id="M_AC_Power_snap"></span> W</div>
+					<div class="col-sm-6">Diff: <span id="M_AC_Power_diff"></span> W</div>
+					<div class="col-sm-12 text-center very-big-text"><span id="M_AC_Power"></span> W</div>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="col-sm-12 powerbox">
+					<div class="col-sm-6">Snap: <span id="M_AC_Power1_snap"></span> W</div>
+					<div class="col-sm-6">Diff: <span id="M_AC_Power1_diff"></span> W</div>
+					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power1"></span> W</div>
+				</div>
+				<div class="col-sm-12 powerbox">
+					<div class="col-sm-6">Snap:  <span id="M_AC_Power2_snap"></span> W</div>
+					<div class="col-sm-6">Diff:  <span id="M_AC_Power2_diff"></span> W</div>
+					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power2"></span> W</div>
+				</div>
+				<div class="col-sm-12 powerbox">
+					<div class="col-sm-6">Snap:  <span id="M_AC_Power3_snap"></span> W</div>
+					<div class="col-sm-6">Diff:  <span id="M_AC_Power3_diff"></span> W</div>
+					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power3"></span> W</div>
+				</div>
+			</div>
+		</div>		
 </body>
 
 

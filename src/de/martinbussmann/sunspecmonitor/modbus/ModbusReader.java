@@ -11,7 +11,7 @@ import net.wimpi.modbus.procimg.Register;
 
 public class ModbusReader {
 
-    public ArrayList<Integer> getModbusData(int unitID, int start, int length) {
+    public ArrayList<Integer> getModbusData(int unitID, int start, int length, int port, String host) {
 
         TCPMasterConnection con = null;
         ModbusTCPTransaction trans = null;
@@ -21,11 +21,10 @@ public class ModbusReader {
         
     	try {
             InetAddress addr = null;
-            int port = 502;
-
-            addr = InetAddress.getByName("localhost");
+            addr = InetAddress.getByName(host);
             con = new TCPMasterConnection(addr);
             con.setPort(port);
+            con.setTimeout(2000);
             con.connect();
 
             request = new ReadMultipleRegistersRequest(start, length);
@@ -44,7 +43,6 @@ public class ModbusReader {
             con.close();
             
         } catch (Exception ex) {
-            System.out.println("Error");
             ex.printStackTrace();
         }
 
@@ -55,17 +53,15 @@ public class ModbusReader {
     private ArrayList<Integer> getListFromRegisters(Register[] registers) {
     	ArrayList<Integer> result = new ArrayList<Integer>();
     	for( int i = 0; i < registers.length; i++ ) {
-    		result.add(i, registers[i].getValue());
+    		result.add(i, toSignedInt16(registers[i].getValue()));
     	}
 		return result;
 	}
-
-
+    
 	private static int toSignedInt16(int i) {
     	if(i > 32768) {
     		i = i - 65536;
     	}
 		return i;
     }
-   
 }
