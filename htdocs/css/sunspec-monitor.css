@@ -5,7 +5,7 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   padding-top: 50px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 
@@ -219,11 +219,24 @@ table {
 }
 
 .very-big-text {
-	font-size: 100px;
-	font-weight: bold;
+ font-size: 100px;
+ font-weight: bold;
 }
 
 .big-text {
-	font-size: 70px;
-	font-weight: bold;
+ font-size: 60px;
+ font-weight: bold;
+ margin-top: -25px;
+}
+
+.chart-box {
+  height: 80px;
+}
+
+.navbar-button {
+  margin-top: 7px;
+}
+
+.panel-heading {
+  padding: 7px 11px;
 }

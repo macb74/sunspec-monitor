@@ -22,6 +22,7 @@
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/bootstrap-datepicker.de.min.js"></script>
     <script src="js/bootstrap-select.min.js"></script>
+    <script src="js/Chart.min.js"></script>
     <script src="js/sunspec-monitor.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="js/ie10-viewport-bug-workaround.js"></script>
@@ -33,34 +34,14 @@
 	<script type="text/javascript">
 	$( document ).ready( function() {
 		getSunspecData();
+
+		data1 = []; data2 = []; data3 = [];
+		chart1 = powerChart(document.getElementById("M_AC_Power1_chart"), [0]);
+		chart2 = powerChart(document.getElementById("M_AC_Power2_chart"), [0]);
+		chart3 = powerChart(document.getElementById("M_AC_Power3_chart"), [0]);
 	});
 	
-	function getSunspecData() {
- 		var jqxhr = $.getJSON( "/modbus/?host=192.168.178.38&port=502&unitID=247" );
-		jqxhr.done(function( data ) {
-			$.each( data, function( key, val ) {
-				$( '#' + key).html(val);
-			});
-			diff();
-			setTimeout( function() { getSunspecData() }, 5000);
-		});
-	}
-
-	function snap() {
-		$( '#M_AC_Power_snap').text($( '#M_AC_Power').text());
-		$( '#M_AC_Power1_snap').text($( '#M_AC_Power1').text());
-		$( '#M_AC_Power2_snap').text($( '#M_AC_Power2').text());
-		$( '#M_AC_Power3_snap').text($( '#M_AC_Power3').text());
-		diff();
-	}
 	
-	function diff() {
-		$( '#M_AC_Power_diff').text($( '#M_AC_Power_snap').text() - $( '#M_AC_Power').text());
-		$( '#M_AC_Power1_diff').text($( '#M_AC_Power1_snap').text() - $( '#M_AC_Power1').text());
-		$( '#M_AC_Power2_diff').text($( '#M_AC_Power2_snap').text() - $( '#M_AC_Power2').text());
-		$( '#M_AC_Power3_diff').text($( '#M_AC_Power3_snap').text() - $( '#M_AC_Power3').text());
-	}
-
 	</script>
 
 	<nav class="navbar navbar-inverse navbar-fixed-top">
@@ -74,41 +55,69 @@
 				</button>
 				<a class="navbar-brand" href="#"><span class="navbar-brand-orange">SUNSPEC</span>Monitor</a>
 			</div>
-			<div id="navbar" class="navbar-collapse collapse">
-
+			<div id="navbar" class="navbar-right navbar-collapse collapse navbar-button">
+				<a href="#" class="btn btn-info" onclick="snap(); return false;" role="button">SNAP</a>
 			</div>
 		</div>
 	</nav>
 	
 	<div class="main">		
-			<div class="col-sm-12">
-				<div class="text-right"><a href="#" class="btn btn-info" onclick="snap(); return false;" role="button">SNAP</a></div>
+						
+			<div class="col-sm-6">
+				<div class="panel panel-info">
+ 					<div class="panel-heading">AC Power - Meter 1</div>
+  					<div class="panel-body text-right">
+   						<div class="label label-warning">Snap: <span id="M_AC_Power_snap">0</span> W</div>
+						<div class="label label-danger">Diff: <span id="M_AC_Power_diff"></span> W</div>
+						<div class="col-sm-12 text-center very-big-text"><span id="M_AC_Power"></span> W</div>
+  					</div>
+				</div>
+
+				<div class="panel panel-info">
+ 					<div class="panel-heading">DC Power - Wechselrichter</div>
+  					<div class="panel-body text-right">
+   						<div class="label label-warning">Snap: <span id="I_DC_Power_snap">0</span> W</div>
+						<div class="label label-danger">Diff: <span id="I_DC_Power_diff"></span> W</div>
+						<div class="col-sm-12 text-center very-big-text"><span id="I_DC_Power"></span> W</div>
+  					</div>
+				</div>
 			</div>
 			
-			<div class="col-sm-12 spacer"></div>
-			
 			<div class="col-sm-6">
-				<div class="col-sm-12 powerbox">
-					<div class="col-sm-6">Snap: <span id="M_AC_Power_snap"></span> W</div>
-					<div class="col-sm-6">Diff: <span id="M_AC_Power_diff"></span> W</div>
-					<div class="col-sm-12 text-center very-big-text"><span id="M_AC_Power"></span> W</div>
+				<div class="panel panel-info">
+ 					<div class="panel-heading">AC Power - Meter 1 - Phase 1</div>
+  					<div class="panel-body text-right">
+						<div class="label label-warning">Snap: <span id="M_AC_Power1_snap">0</span> W</div>
+						<div class="label label-danger">Diff: <span id="M_AC_Power1_diff"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power1"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="M_AC_Power1_chart" ></canvas>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="col-sm-6">
-				<div class="col-sm-12 powerbox">
-					<div class="col-sm-6">Snap: <span id="M_AC_Power1_snap"></span> W</div>
-					<div class="col-sm-6">Diff: <span id="M_AC_Power1_diff"></span> W</div>
-					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power1"></span> W</div>
+				
+				<div class="panel panel-info">
+ 					<div class="panel-heading">AC Power - Meter 1 - Phase 2</div>
+  					<div class="panel-body text-right">
+						<div class="label label-warning">Snap:  <span id="M_AC_Power2_snap">0</span> W</div>
+						<div class="label label-danger">Diff:  <span id="M_AC_Power2_diff"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power2"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="M_AC_Power2_chart" ></canvas>
+						</div>
+					</div>
 				</div>
-				<div class="col-sm-12 powerbox">
-					<div class="col-sm-6">Snap:  <span id="M_AC_Power2_snap"></span> W</div>
-					<div class="col-sm-6">Diff:  <span id="M_AC_Power2_diff"></span> W</div>
-					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power2"></span> W</div>
-				</div>
-				<div class="col-sm-12 powerbox">
-					<div class="col-sm-6">Snap:  <span id="M_AC_Power3_snap"></span> W</div>
-					<div class="col-sm-6">Diff:  <span id="M_AC_Power3_diff"></span> W</div>
-					<div class="col-sm-12 text-center big-text"><span id="M_AC_Power3"></span> W</div>
+				
+				<div class="panel panel-info">
+ 					<div class="panel-heading">AC Power - Meter 1 - Phase 3</div>
+  					<div class="panel-body text-right">
+						<div class="label label-warning">Snap:  <span id="M_AC_Power3_snap">0</span> W</div>
+						<div class="label label-danger">Diff:  <span id="M_AC_Power3_diff"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power3"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="M_AC_Power3_chart" ></canvas>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>		
