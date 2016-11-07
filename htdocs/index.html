@@ -35,10 +35,13 @@
 	$( document ).ready( function() {
 		getSunspecData();
 
-		data1 = []; data2 = []; data3 = [];
+		data1 = []; data2 = []; data3 = []; data4 = []; data5 = []; data6 = []; labels = [];
 		chart1 = powerChart(document.getElementById("M_AC_Power1_chart"), [0]);
 		chart2 = powerChart(document.getElementById("M_AC_Power2_chart"), [0]);
 		chart3 = powerChart(document.getElementById("M_AC_Power3_chart"), [0]);
+		chart4 = powerChart(document.getElementById("M_AC_Power_chart"), [0]);
+		chart5 = powerChart(document.getElementById("I_DC_Power_chart"), [0]);
+		chart6 = powerChart(document.getElementById("My_Power_chart"), [0]);
 	});
 	
 	
@@ -66,19 +69,39 @@
 			<div class="col-sm-6">
 				<div class="panel panel-info">
  					<div class="panel-heading">AC Power - Meter 1</div>
-  					<div class="panel-body text-right">
+  					<div class="panel-body power-box text-right">
+ 						<div class="label label-success">Einspeisung: <span id="My_Power_in">0</span> %</div>
    						<div class="label label-warning">Snap: <span id="M_AC_Power_snap">0</span> W</div>
 						<div class="label label-danger">Diff: <span id="M_AC_Power_diff"></span> W</div>
-						<div class="col-sm-12 text-center very-big-text"><span id="M_AC_Power"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="M_AC_Power_chart" ></canvas>
+						</div>
   					</div>
 				</div>
 
 				<div class="panel panel-info">
  					<div class="panel-heading">DC Power - Wechselrichter</div>
-  					<div class="panel-body text-right">
+  					<div class="panel-body power-box text-right">
    						<div class="label label-warning">Snap: <span id="I_DC_Power_snap">0</span> W</div>
 						<div class="label label-danger">Diff: <span id="I_DC_Power_diff"></span> W</div>
-						<div class="col-sm-12 text-center very-big-text"><span id="I_DC_Power"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="I_DC_Power"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="I_DC_Power_chart" ></canvas>
+						</div>
+  					</div>
+				</div>
+				
+				<div class="panel panel-info">
+ 					<div class="panel-heading">Verbrauch</div>
+  					<div class="panel-body power-box text-right">
+						<div class="label label-success">Eigenleistung: <span id="My_Power_self">0</span> %</div>
+						<div class="label label-warning">Snap: <span id="My_Power_snap">0</span> W</div>
+						<div class="label label-danger">Diff: <span id="My_Power_diff"></span> W</div>
+						<div class="col-sm-12 text-center big-text"><span id="My_Power"></span> W</div>
+						<div class="col-sm-12 chart-box">
+							<canvas id="My_Power_chart" ></canvas>
+						</div>
   					</div>
 				</div>
 			</div>
@@ -86,7 +109,7 @@
 			<div class="col-sm-6">
 				<div class="panel panel-info">
  					<div class="panel-heading">AC Power - Meter 1 - Phase 1</div>
-  					<div class="panel-body text-right">
+  					<div class="panel-body power-box text-right">
 						<div class="label label-warning">Snap: <span id="M_AC_Power1_snap">0</span> W</div>
 						<div class="label label-danger">Diff: <span id="M_AC_Power1_diff"></span> W</div>
 						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power1"></span> W</div>
@@ -98,7 +121,7 @@
 				
 				<div class="panel panel-info">
  					<div class="panel-heading">AC Power - Meter 1 - Phase 2</div>
-  					<div class="panel-body text-right">
+  					<div class="panel-body power-box text-right">
 						<div class="label label-warning">Snap:  <span id="M_AC_Power2_snap">0</span> W</div>
 						<div class="label label-danger">Diff:  <span id="M_AC_Power2_diff"></span> W</div>
 						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power2"></span> W</div>
@@ -110,7 +133,7 @@
 				
 				<div class="panel panel-info">
  					<div class="panel-heading">AC Power - Meter 1 - Phase 3</div>
-  					<div class="panel-body text-right">
+  					<div class="panel-body power-box text-right">
 						<div class="label label-warning">Snap:  <span id="M_AC_Power3_snap">0</span> W</div>
 						<div class="label label-danger">Diff:  <span id="M_AC_Power3_diff"></span> W</div>
 						<div class="col-sm-12 text-center big-text"><span id="M_AC_Power3"></span> W</div>

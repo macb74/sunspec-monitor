@@ -2,7 +2,7 @@ function powerChart(chart, values) {
 	myChart = new Chart(chart, {
 		type : 'line',
 		data : {
-			labels: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+			labels: [0],
 			datasets: [{
 				label: false,
 				fill: false,
@@ -47,9 +47,10 @@ function powerChart(chart, values) {
 }
 
 
-function refreshChart(chart, values) {
+function refreshChart(chart, values, labels) {
 	chart.data.datasets[0].data = values;
-	console.log(values);
+	chart.data.labels = labels;	
+	//console.log(values);
 	chart.update();
 }
 
@@ -62,21 +63,46 @@ function getSunspecData() {
 		$( '#M_AC_Power1' ).text(Math.round(data.M_AC_Power1 * getDivisor(data.M_AC_Power_Scale)));
 		$( '#M_AC_Power2' ).text(Math.round(data.M_AC_Power2 * getDivisor(data.M_AC_Power_Scale)));
 		$( '#M_AC_Power3' ).text(Math.round(data.M_AC_Power3 * getDivisor(data.M_AC_Power_Scale)));
+		$( '#My_Power' ).text($( '#I_DC_Power' ).text() - $( '#M_AC_Power' ).text());
+		
+		self = Math.round($( '#I_DC_Power' ).text() / ($( '#My_Power' ).text() / 100));
+		if(self > 100) { self = 100; }
+		$( '#My_Power_self' ).text(self);
+		
+		input = 0;
+		if($( '#M_AC_Power' ).text() > 0) {
+			input = Math.round($( '#M_AC_Power' ).text / ($( '#I_DC_Power' ).text() / 100));
+		}
+		$( '#My_Power_in' ).text(input);
 		
 		diff();
 		
-		data1.push($( '#M_AC_Power1' ).text());
-		if(data1.length > 21) { data1.shift(); }
+		if(labels.length < 31) { labels.push(''); }
+		
+		data1.push($( '#M_AC_Power1' ).text() * -1);
+		if(data1.length > 31) { data1.shift(); }
 
-		data2.push($( '#M_AC_Power2' ).text());
-		if(data1.length > 21) { data1.shift(); }
+		data2.push($( '#M_AC_Power2' ).text() * -1);
+		if(data2.length > 31) { data2.shift(); }
 		
-		data3.push($( '#M_AC_Power3' ).text());
-		if(data1.length > 21) { data1.shift(); }
+		data3.push($( '#M_AC_Power3' ).text() * -1);
+		if(data3.length > 31) { data3.shift(); }
 		
-		refreshChart(chart1, data1 );
-		refreshChart(chart2, data2 );
-		refreshChart(chart3, data3 );
+		data4.push($( '#M_AC_Power' ).text() * -1);
+		if(data4.length > 31) { data4.shift(); }
+
+		data5.push($( '#I_DC_Power' ).text());
+		if(data5.length > 31) { data5.shift(); }
+
+		data6.push($( '#My_Power' ).text());
+		if(data6.length > 31) { data6.shift(); }
+
+		refreshChart(chart1, data1, labels );
+		refreshChart(chart2, data2, labels );
+		refreshChart(chart3, data3, labels );
+		refreshChart(chart4, data4, labels );
+		refreshChart(chart5, data5, labels );
+		refreshChart(chart6, data6, labels );
 		setTimeout( function() { getSunspecData() }, 5000);
 	});
 }
@@ -87,6 +113,7 @@ function snap() {
 	$( '#M_AC_Power1_snap').text($( '#M_AC_Power1').text());
 	$( '#M_AC_Power2_snap').text($( '#M_AC_Power2').text());
 	$( '#M_AC_Power3_snap').text($( '#M_AC_Power3').text());
+	$( '#My_Power_snap').text($( '#My_Power').text());
 	diff();
 }
 
@@ -96,6 +123,7 @@ function diff() {
 	$( '#M_AC_Power1_diff').text($( '#M_AC_Power1_snap').text() - $( '#M_AC_Power1').text());
 	$( '#M_AC_Power2_diff').text($( '#M_AC_Power2_snap').text() - $( '#M_AC_Power2').text());
 	$( '#M_AC_Power3_diff').text($( '#M_AC_Power3_snap').text() - $( '#M_AC_Power3').text());
+	$( '#My_Power_diff').text($( '#My_Power_snap').text() - $( '#My_Power').text());
 }
 
 function getDivisor(i) {
@@ -106,6 +134,9 @@ function getDivisor(i) {
 	        break;
 	    case -2:
 	        d = 0.01;
+	        break;
+	    case -3:
+	        d = 0.001;
 	        break;
 	}
 	return d

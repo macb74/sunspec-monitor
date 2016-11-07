@@ -226,7 +226,7 @@ table {
 .big-text {
  font-size: 60px;
  font-weight: bold;
- margin-top: -25px;
+ margin-top: -5px;
 }
 
 .chart-box {
@@ -239,4 +239,8 @@ table {
 
 .panel-heading {
   padding: 7px 11px;
+}
+
+.power-box {
+  margin-top: -5px;
 }
