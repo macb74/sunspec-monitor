@@ -57,7 +57,19 @@ function refreshChart(chart, values, labels) {
 
 function getSunspecData() {
 	var jqxhr = $.getJSON( "/modbus/" );
-	jqxhr.done(function( data ) {	
+	jqxhr.done(function( data ) {
+		
+		labels = [];
+		
+		$.each(data, function() {
+			$.each(this, function(k, v) {
+				labels.push(v);
+				console.log(k + "-" + v);
+			});
+	    });
+		
+		console.log(labels);
+		
 		$( '#I_DC_Power' ).text(Math.round(data.I_DC_Power * getDivisor(data.I_DC_Power_Scale)));
 		$( '#M_AC_Power' ).text(Math.round(data.M_AC_Power * getDivisor(data.M_AC_Power_Scale)));
 		$( '#M_AC_Power1' ).text(Math.round(data.M_AC_Power1 * getDivisor(data.M_AC_Power_Scale)));

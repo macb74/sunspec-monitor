@@ -37,6 +37,7 @@ public class SunspecMonitor {
 	
 	    ServletContextHandler handler = new ServletContextHandler();
 	    context = handler.getServletContext();
+	    context.setAttribute("sunspec.result", "[]");
 	    handler.addServlet(SunspecReadServlet.class, "/modbus/*");
 	    
 	    HandlerList handlers = new HandlerList();
