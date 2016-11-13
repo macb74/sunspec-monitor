@@ -24,9 +24,9 @@ public class SunspecMonitor {
 	
     public static void main(String[] args) {
     	
-    	int unitID = 247;
-    	String host = "192.168.178.38";
-    	int port = 502;
+    	int unitID = props.getIntPropertie("modbus.id");
+    	String host = props.getPropertie("modbus.host");
+    	int port = props.getIntPropertie("modbus.port");
     	
 	    Server server = new Server();
 	    ServerConnector connector = new ServerConnector(server);
@@ -56,6 +56,7 @@ public class SunspecMonitor {
 		modbus.setUnitID(unitID);
     	modbus.setHost(host);
     	modbus.setPort(port);
+    	modbus.setGraphLength(props.getIntPropertie("graph.length"));    	
     	thread.start();
 	    
 	    try

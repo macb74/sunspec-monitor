@@ -10,8 +10,10 @@ import javax.servlet.ServletContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import net.wimpi.modbus.ModbusException;
+import net.wimpi.modbus.ModbusIOException;
+import net.wimpi.modbus.ModbusSlaveException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
-import net.wimpi.modbus.msg.ModbusRequest;
 import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
 import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
 import net.wimpi.modbus.net.TCPMasterConnection;
@@ -24,13 +26,14 @@ public class ModbusReaderThread implements Runnable {
 	private String host;
 	private int port;
 	private JSONObject json;
-
+	private int graphLength;
+	
 	@Override
 	public void run() {
 		while (true) {
 			try {
-				getModbusData(100, 111);
 				Thread.sleep(5000);
+				getModbusData(1, 111);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -40,11 +43,8 @@ public class ModbusReaderThread implements Runnable {
 	public void getModbusData(int start, int length) {
 
 		Register[] registers = null;
-
 		TCPMasterConnection con = null;
-		ModbusTCPTransaction trans = null;
-		ModbusRequest request = null;
-		ReadMultipleRegistersResponse response = null;
+		ArrayList<Integer> inverterData = new ArrayList<Integer>();
 
 		json = new JSONObject(context.getAttribute("sunspec.result").toString());
 
@@ -56,33 +56,27 @@ public class ModbusReaderThread implements Runnable {
 			con.setTimeout(2000);
 			con.connect();
 
-			request = new ReadMultipleRegistersRequest(start, length);
-			request.setUnitID(unitID);
-
-			trans = new ModbusTCPTransaction(con);
-			trans.setRetries(0);
-			trans.setRequest(request);
-			trans.execute();
-
-			response = (ReadMultipleRegistersResponse) trans.getResponse();
-			registers = response.getRegisters();
+			registers = readRegisters(con, 83, 2);
+			inverterData = getSignetInt16(inverterData, registers);
+						
+			registers = readRegisters(con, 206, 5);
+			inverterData = getSignetInt16(inverterData, registers);
+			
 			con.close();
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		if (registers != null) {
-
-			ArrayList<Integer> inverterData = getSignetInt16(registers);
+		if (inverterData.size() == 7) {
 
 			double iPower = inverterData.get(0) * getDivisor(inverterData.get(1));
-			double mPower = inverterData.get(106) * getDivisor(inverterData.get(110));
+			double mPower = inverterData.get(2) * getDivisor(inverterData.get(6));
 			json.getJSONArray("I_DC_Power").put(iPower);
 			json.getJSONArray("M_AC_Power").put(mPower);
-			json.getJSONArray("M_AC_Power1").put(inverterData.get(107) * getDivisor(inverterData.get(110)));
-			json.getJSONArray("M_AC_Power2").put(inverterData.get(108) * getDivisor(inverterData.get(110)));
-			json.getJSONArray("M_AC_Power3").put(inverterData.get(109) * getDivisor(inverterData.get(110)));
+			json.getJSONArray("M_AC_Power1").put(inverterData.get(3) * getDivisor(inverterData.get(6)));
+			json.getJSONArray("M_AC_Power2").put(inverterData.get(4) * getDivisor(inverterData.get(6)));
+			json.getJSONArray("M_AC_Power3").put(inverterData.get(5) * getDivisor(inverterData.get(6)));
 			json.getJSONArray("My_Power").put(iPower - mPower);
 			json.getJSONArray("Date").put(getDate());
 
@@ -98,8 +92,22 @@ public class ModbusReaderThread implements Runnable {
 		}
 	}
 
+	private Register[] readRegisters(TCPMasterConnection con, int start, int len) throws ModbusIOException, ModbusSlaveException, ModbusException {
+		ReadMultipleRegistersRequest request = new ReadMultipleRegistersRequest(start, len);
+		request.setUnitID(unitID);
+
+		ModbusTCPTransaction trans = new ModbusTCPTransaction(con);
+		trans.setRetries(0);
+		trans.setRequest(request);
+		trans.execute();
+
+		ReadMultipleRegistersResponse response = (ReadMultipleRegistersResponse) trans.getResponse();
+		Register[] registers = response.getRegisters();
+		return registers;
+	}
+
 	private void shift(JSONArray json) {
-		while (json.length() > 40) {
+		while (json.length() > graphLength) {
 			json.remove(0);
 		}
 	}
@@ -110,12 +118,11 @@ public class ModbusReaderThread implements Runnable {
 		return formatter.format(currentTime);
 	}
 
-	private ArrayList<Integer> getSignetInt16(Register[] registers) {
-		ArrayList<Integer> data = new ArrayList<Integer>();
+	private ArrayList<Integer> getSignetInt16(ArrayList<Integer> inverterData, Register[] registers) {
 		for (int i = 0; i < registers.length; i++) {
-			data.add(toSignedInt16(registers[i].getValue()));
+			inverterData.add(toSignedInt16(registers[i].getValue()));
 		}
-		return data;
+		return inverterData;
 	}
 
 	private static int toSignedInt16(int i) {
@@ -161,6 +168,10 @@ public class ModbusReaderThread implements Runnable {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public void setGraphLength(int graphLength) {
+		this.graphLength = graphLength;	
 	}
 
 }

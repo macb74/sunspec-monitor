@@ -36,11 +36,11 @@
 		getSunspecData();
 
 		data1 = []; data2 = []; data3 = []; data4 = []; data5 = []; data6 = [];
-		chart1 = powerChart(document.getElementById("M_AC_Power1_chart"), [0]);
-		chart2 = powerChart(document.getElementById("M_AC_Power2_chart"), [0]);
-		chart3 = powerChart(document.getElementById("M_AC_Power3_chart"), [0]);
-		chart4 = powerChart(document.getElementById("M_AC_Power_chart"), [0]);
-		chart5 = powerChart(document.getElementById("I_DC_Power_chart"), [0]);
+		chart1 = powerChart(document.getElementById("I_DC_Power_chart"), [0]);
+		chart2 = powerChart(document.getElementById("M_AC_Power_chart"), [0]);
+		chart3 = powerChart(document.getElementById("M_AC_Power1_chart"), [0]);
+		chart4 = powerChart(document.getElementById("M_AC_Power2_chart"), [0]);
+		chart5 = powerChart(document.getElementById("M_AC_Power3_chart"), [0]);
 		chart6 = powerChart(document.getElementById("My_Power_chart"), [0]);
 	});
 	
@@ -81,7 +81,7 @@
 				</div>
 
 				<div class="panel panel-info">
- 					<div class="panel-heading">DC Power - Wechselrichter</div>
+ 					<div class="panel-heading">AC Power - Wechselrichter</div>
   					<div class="panel-body power-box text-right">
    						<div class="label label-warning">Snap: <span id="I_DC_Power_snap">0</span> W</div>
 						<div class="label label-danger">Diff: <span id="I_DC_Power_diff"></span> W</div>
