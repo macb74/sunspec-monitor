@@ -12,6 +12,8 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import de.martinbussmann.sunspecmonitor.helper.ReadProperties;
 
@@ -37,7 +39,10 @@ public class SunspecMonitor {
 	
 	    ServletContextHandler handler = new ServletContextHandler();
 	    context = handler.getServletContext();
-	    context.setAttribute("sunspec.result", "[]");
+	    
+	    JSONObject json = initJSONObject();
+	    context.setAttribute("sunspec.result", json.toString());
+
 	    handler.addServlet(SunspecReadServlet.class, "/modbus/*");
 	    
 	    HandlerList handlers = new HandlerList();
@@ -63,6 +68,19 @@ public class SunspecMonitor {
 	    {
 	        t.printStackTrace(System.err);
 	    }
+	}
+
+	private static JSONObject initJSONObject() {
+	    JSONArray j = new JSONArray();
+	    JSONObject json = new JSONObject();
+	    json.put("I_DC_Power", j);
+	    json.put("M_AC_Power", j);
+	    json.put("M_AC_Power1", j);
+	    json.put("M_AC_Power2", j);
+	    json.put("M_AC_Power3", j);
+	    json.put("Date", j);
+	    json.put("My_Power", j);
+	    return json;
 	}
      
 }
