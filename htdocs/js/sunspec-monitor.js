@@ -33,12 +33,17 @@ function powerChart(chart, values) {
 			scales: {
 				xAxes: [{
 					display: false
+					}],
+				yAxes: [{
+					ticks : {
+						reverse : true
+						}
 					}]
 				},
-				legend: {
-					display: false,
-					labels: {
-						display: false
+			legend: {
+				display: false,
+				labels: {
+					display: false
 					}
 				}
 			}
@@ -58,7 +63,7 @@ function refreshChart(chart, values, labels) {
 function getSunspecData() {
 	var jqxhr = $.getJSON( "/modbus/" );
 	jqxhr.done(function( data ) {
-				
+		
 		$( '#I_DC_Power' ).text(Math.round(data.I_DC_Power[data.I_DC_Power.length-1]));
 		$( '#M_AC_Power' ).text(Math.round(data.M_AC_Power[data.M_AC_Power.length-1]));
 		$( '#M_AC_Power1' ).text(Math.round(data.M_AC_Power1[data.M_AC_Power1.length-1]));
